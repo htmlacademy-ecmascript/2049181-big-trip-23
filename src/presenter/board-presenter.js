@@ -7,18 +7,22 @@ import EventsListView from '../view/events-list-view.js';
 
 const TRIP_ELEMENTS_COUNT = 3;
 
-const contentContainer = document.querySelector('.trip-events');
-const eventsList = new EventsListView;
 
-const init = () => {
+export default class BoardPresenter {
 
-  render(new SortView, contentContainer);
-  render(eventsList, contentContainer);
-  render(new EventsItemEditView, eventsList.getElement());
+  eventsList = new EventsListView;
 
-  Array.from({length: TRIP_ELEMENTS_COUNT}).forEach(() => {
-    render(new EventsItemView, eventsList.getElement());
-  });
-};
+  constructor({boardContainer}) {
+    this.boardContainer = boardContainer;
+  }
 
-export { init };
+  init() {
+    render(new SortView, this.boardContainer);
+    render(this.eventsList, this.boardContainer);
+    render(new EventsItemEditView, this.eventsList.getElement());
+
+    Array.from({length: TRIP_ELEMENTS_COUNT}).forEach(() => {
+      render(new EventsItemView, this.eventsList.getElement());
+    });
+  }
+}
