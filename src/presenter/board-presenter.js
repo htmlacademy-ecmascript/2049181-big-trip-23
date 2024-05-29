@@ -12,8 +12,9 @@ export default class BoardPresenter {
 
   eventsList = new EventsListView;
 
-  constructor({boardContainer}) {
+  constructor({boardContainer, data}) {
     this.boardContainer = boardContainer;
+    this.data = data;
   }
 
   init() {
