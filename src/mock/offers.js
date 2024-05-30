@@ -1,14 +1,13 @@
 import { EVENT_TYPES } from '../const.js';
-import { DESCRIPTION } from './const.js';
+import { OFFER_DESCRIPTIONS } from './const.js';
 import { getRandomArrayElement, getRandomInteger, makeGetRandomIntegerNoRepeat } from './util.js';
 
-const descriptions = DESCRIPTION.split('. ');
 const createId = makeGetRandomIntegerNoRepeat();
 
 const createOffer = () => (
   {
     'id': createId(1000, 9999),
-    'title': getRandomArrayElement(descriptions),
+    'title': getRandomArrayElement(OFFER_DESCRIPTIONS),
     'price': getRandomInteger(20, 120)
   }
 );

@@ -2,7 +2,10 @@ const DESCRIPTION = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cr
 
 const DESTINATIONS = ['Moscow', 'Bataysk', 'Rostov-on-Don', 'Taganrog', 'Vorkuta', 'Chelyabinsk', 'Ufa', 'Barnaul', 'Kurgan', 'Krasnodar', 'Novorossiysk'];
 
+const OFFER_DESCRIPTIONS = ['Add coffee', 'Make chill', 'Create unuverse', 'Get out driver', 'Kiss for goodbye', 'Remove coffe', 'Select radio', 'No talking to me'];
+
 export {
+  OFFER_DESCRIPTIONS,
   DESCRIPTION,
   DESTINATIONS
 };
