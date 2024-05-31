@@ -23,19 +23,33 @@ export default class BoardPresenter {
         (offer) => selectedOffers.includes(offer.id)
       );
     };
+    const createAdvancedEventItem = (eventItem, destinationsList) => {
+      if (destinationsList) {
+        eventItem = {
+          ... eventItem,
+          allOffers: getOffersByType(eventItem.type),
+          destinationsList
+        };
+      }
 
+      return (
+        {
+          ...eventItem,
+          destinationName: getDestinationName(eventItem.destination),
+          offers: getOffersById(eventItem.offers, eventItem.type)
+        }
+      );
+    };
     render(new SortView, this.boardContainer);
     render(this.eventsList, this.boardContainer);
-    render(new EventsItemEditView, this.eventsList.getElement());
+    render(new EventsItemEditView(createAdvancedEventItem(eventItems[0], destinations)), this.eventsList.getElement());
 
-    eventItems.forEach((eventItem) => {
-      render(new EventsItemView(
-        {...eventItem,
-          destinationName: getDestinationName(eventItem.destination),
-          selectedOffers: getOffersById(eventItem.offers, eventItem.type)
+    for (let i = 1; i < eventItems.length; i++) {
+      const eventItem = createAdvancedEventItem(eventItems[i]);
 
-        }
-      ), this.eventsList.getElement());
-    });
+      render(new EventsItemView(eventItem),
+        this.eventsList.getElement()
+      );
+    }
   }
 }

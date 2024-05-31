@@ -7,14 +7,14 @@ dayjs.extend(duration).extend(utc);
 const humanizeDate = (date) => dayjs(date).format('MMM DD');
 const humanizeTime = (date) => dayjs(date).utc().format('HH:mm');
 const formatDate = (date) => dayjs(date).format('YYYY-MM-DD');
-const formatTime = (date) => dayjs(date).format('YYYY-MM-DD[T]HH:mm');
+const formatTime = (date) => dayjs(date).utc().format('YYYY-MM-DD[T]HH:mm');
+const humanizeEditFormDate = (date) => dayjs(date).utc().format('DD[/]MM[/]YY HH[:]mm');
 const showDuration = (from, to) => {
   from = dayjs(from);
   to = dayjs(to);
 
-  let format = 'DD[D] HH[H] mm[M]';
-
   const durationObject = dayjs.duration(to.diff(from));
+  let format = 'DD[D] HH[H] mm[M]';
 
   if (durationObject.days() === 0) {
     format = 'HH[H] mm[M]';
@@ -26,6 +26,7 @@ const showDuration = (from, to) => {
 };
 
 export {
+  humanizeEditFormDate,
   humanizeDate,
   humanizeTime,
   formatDate,
