@@ -50,6 +50,27 @@ const createOffersListTemplate = (allOffers, selectedOffers) => (
     : ''
 );
 
+const createDestinationPhotosTemplate = (destinationPhotos) =>
+  destinationPhotos.length > 0 ? (
+    `<div class="event__photos-container">
+       <div class="event__photos-tape">
+         ${destinationPhotos.map((photo) => (`<img class="event__photo" src="${photo.src}" alt="${photo.description}"></img>`)).join(' ')}
+       </div>
+     </div>`
+  ) : '';
+
+const createDestinationInfoTemplate = (destinationsList, thisDestinationId) => {
+  const destination = destinationsList.find((element) => element.id === thisDestinationId);
+
+  return destination.description && destination.description.length > 0 ? (
+    `<section class="event__section  event__section--destination">
+    <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+    <p class="event__destination-description">${destination.description}</p>
+    ${createDestinationPhotosTemplate(destination.pictures)}
+  </section>`
+  ) : '';
+};
+
 const createEventsItemEditTemplate = ({type, destinationName, destinationsList, dateFrom, dateTo, basePrice, destination, allOffers, offers}) => (
   `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -101,10 +122,7 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
     </header>
     <section class="event__details">
       ${createOffersListTemplate(allOffers, offers)}
-      <section class="event__section  event__section--destination">
-        <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destinationsList.find((element) => element.id === destination).description}</p>
-      </section>
+      ${createDestinationInfoTemplate(destinationsList, destination)}
     </section>
   </form>
 </li>`

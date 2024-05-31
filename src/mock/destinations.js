@@ -19,7 +19,7 @@ const createPicture = () => (
   }
 );
 
-const createPictures = () => Array.from({length: getRandomInteger(1, 4)}).map(createPicture);
+const createPictures = () => Array.from({length: getRandomInteger(0, 4)}).map(createPicture);
 
 const createCityName = (cities) => {
   const city = getRandomArrayElement(cities);
