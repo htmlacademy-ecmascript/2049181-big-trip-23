@@ -11,7 +11,7 @@ const createSelectedOfferTemplate = (offer) => (
 const createSelectedOffersTemplate = (offers) => offers.map(createSelectedOfferTemplate).join(' ');
 const handleFavoriteClass = (favoriteFlag) => favoriteFlag ? 'event__favorite-btn--active' : '';
 
-const createEventsItemTemplate = ({isFavorite, destinationName, selectedOffers, type, basePrice, dateFrom, dateTo}) => (
+const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, basePrice, dateFrom, dateTo}) => (
   `<li class="trip-events__item">
   <div class="event">
     <time class="event__date" datetime="${formatDate(dateFrom)}">${humanizeDate(dateFrom)}</time>
@@ -32,7 +32,7 @@ const createEventsItemTemplate = ({isFavorite, destinationName, selectedOffers, 
     </p>
     <h4 class="visually-hidden">Offers:</h4>
     <ul class="event__selected-offers">
-      ${createSelectedOffersTemplate(selectedOffers)}
+      ${createSelectedOffersTemplate(offers)}
     </ul>
     <button class="event__favorite-btn ${handleFavoriteClass(isFavorite)}" type="button">
       <span class="visually-hidden">Add to favorite</span>
@@ -48,7 +48,6 @@ const createEventsItemTemplate = ({isFavorite, destinationName, selectedOffers, 
 );
 
 export default class EventsItemView {
-
   eventItem = {};
 
   constructor (eventItem) {

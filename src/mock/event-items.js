@@ -1,7 +1,6 @@
 import { EVENT_TYPES } from '../const.js';
+import { EVENT_ITEMS_COUNT} from './const.js';
 import { getRandomArrayElement, getRandomInteger, makeGetRandomIntegerNoRepeat } from './util.js';
-
-const EVENT_ITEMS_COUNT = 10;
 
 const getRandomIntegerNoRepeat = makeGetRandomIntegerNoRepeat();
 
