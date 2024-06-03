@@ -1,4 +1,4 @@
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { formatDate, formatTime, humanizeDate, humanizeTime, showDuration } from '../util.js';
 
 const createSelectedOfferTemplate = (offer) => (
@@ -47,26 +47,15 @@ const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, ba
 </li>`
 );
 
-export default class EventsItemView {
+export default class EventsItemView extends AbstractView {
   eventItem = {};
 
   constructor (eventItem) {
+    super();
     this.eventItem = eventItem;
   }
 
-  getTemplate() {
+  get template() {
     return createEventsItemTemplate(this.eventItem);
-  }
-
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
   }
 }

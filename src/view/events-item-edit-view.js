@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEditFormDate } from '../util.js';
 
 const createEventTypeItemTemplate = (type, eventItemType) => {
@@ -128,26 +128,16 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
 </li>`
 );
 
-export default class EventsItemEditView {
-  eventItem = {};
+export default class EventsItemEditView extends AbstractView {
+  #eventItem = {};
 
   constructor(eventItem) {
-    this.eventItem = eventItem;
+    super();
+    this.#eventItem = eventItem;
   }
 
-  getTemplate() {
-    return createEventsItemEditTemplate(this.eventItem);
+  get template() {
+    return createEventsItemEditTemplate(this.#eventItem);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }
