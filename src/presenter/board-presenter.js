@@ -44,14 +44,6 @@ export default class BoardPresenter {
     };
     render(new SortView, this.#boardContainer);
     render(this.#eventsList, this.#boardContainer);
-    render(new EventsItemEditView(createAdvancedEventItem(eventItems[0], destinations)), this.#eventsList.element);
-
-    for (let i = 1; i < eventItems.length; i++) {
-      const eventItem = createAdvancedEventItem(eventItems[i]);
-
-      render(new EventsItemView(eventItem),
-        this.#eventsList.element
-      );
-    }
+    eventItems.forEach((eventItem) => render(new EventsItemView(createAdvancedEventItem(eventItem)), this.#eventsList.element));
   }
 }

@@ -48,14 +48,14 @@ const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, ba
 );
 
 export default class EventsItemView extends AbstractView {
-  eventItem = {};
+  #eventItem = {};
 
   constructor (eventItem) {
     super();
-    this.eventItem = eventItem;
+    this.#eventItem = eventItem;
   }
 
   get template() {
-    return createEventsItemTemplate(this.eventItem);
+    return createEventsItemTemplate(this.#eventItem);
   }
 }
