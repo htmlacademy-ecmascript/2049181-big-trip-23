@@ -9,6 +9,10 @@ export default class BoardPresenter {
   #eventsList = new EventsListView;
   #boardContainer = null;
   #dataModel = null;
+  #eventItems = [];
+  #destinations = [];
+  #offers = [];
+
 
   constructor({boardContainer, dataModel}) {
     this.#boardContainer = boardContainer;
@@ -16,34 +20,54 @@ export default class BoardPresenter {
   }
 
   init() {
-    const { eventItems, destinations, offers } = this.#dataModel.getData();
-    const getDestinationName = (id) => destinations.find((element) => element.id === id).name;
-    const getOffersByType = (type) => offers.find((element) => element.type === type).offers;
-    const getOffersById = (selectedOffers, type) => {
-      const allOffers = getOffersByType(type);
-      return allOffers.filter(
-        (offer) => selectedOffers.includes(offer.id)
-      );
-    };
-    const createAdvancedEventItem = (eventItem, destinationsList) => {
-      if (destinationsList) {
-        eventItem = {
-          ... eventItem,
-          allOffers: getOffersByType(eventItem.type),
-          destinationsList
-        };
-      }
+    ({
+      eventItems: this.#eventItems,
+      destinations: this.#destinations,
+      offers: this.#offers
+    } = this.#dataModel.data);
 
-      return (
-        {
-          ...eventItem,
-          destinationName: getDestinationName(eventItem.destination),
-          offers: getOffersById(eventItem.offers, eventItem.type)
-        }
-      );
-    };
+    this.#renderBoard();
+  }
+
+  #renderSort() {
     render(new SortView, this.#boardContainer);
+  }
+
+  #renderPointsList() {
     render(this.#eventsList, this.#boardContainer);
-    eventItems.forEach((eventItem) => render(new EventsItemView(createAdvancedEventItem(eventItem)), this.#eventsList.element));
+  }
+
+  #renderPoint(point) {
+    point = this.#createAdvancedPoint(point);
+    const eventItemView = new EventsItemView(point);
+    const eventItemEditView = new EventsItemEditView(point);
+
+    render(eventItemView, this.#eventsList.element);
+  }
+
+  #renderPoints() {
+    this.#eventItems.forEach((point) => this.#renderPoint(point));
+  }
+
+  #renderBoard() {
+    this.#renderSort();
+    this.#renderPointsList();
+    this.#renderPoints();
+  }
+
+  #createAdvancedPoint(point) {
+    const getDestinationName = (id) => this.#destinations.find((element) => element.id === id).name;
+    const getOffersByType = (type) => this.#offers.find((element) => element.type === type).offers;
+    const getOffersById = (selectedOffers, type) => getOffersByType(type).filter((offer) => selectedOffers.includes(offer.id));
+
+    return (
+      {
+        ...point,
+        destinationName: getDestinationName(point.destination),
+        offers: getOffersById(point.offers, point.type),
+        allOffers: getOffersByType(point.type),
+        destinationsList: this.#destinations
+      }
+    );
   }
 }
