@@ -3,6 +3,7 @@ import SortView from '../view/sort-view.js';
 import PointEditView from '../view/point-edit-view.js';
 import PointItemView from '../view/point-view.js';
 import PointsListView from '../view/points-list-view.js';
+import { isESCbutton } from '../util.js';
 
 export default class BoardPresenter {
 
@@ -39,10 +40,22 @@ export default class BoardPresenter {
 
   #renderPoint(point) {
     point = this.#createAdvancedPoint(point);
+
+    const escKeydownHandler = (evt) => {
+      if (isESCbutton(evt)) {
+        evt.preventDefault();
+        replaceFormToPoint();
+
+        document.removeEventListener('keydown', escKeydownHandler);
+      }
+    };
+
     const eventItemView = new PointItemView({
       point,
       onRollupButtonClick: () => {
         replacePointToForm();
+
+        document.addEventListener('keydown', escKeydownHandler);
       }
     });
 
@@ -50,6 +63,8 @@ export default class BoardPresenter {
       point,
       onSaveButtonClick: () => {
         replaceFormToPoint();
+
+        document.removeEventListener('keydown', escKeydownHandler);
       }
     });
 
