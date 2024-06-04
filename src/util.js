@@ -25,11 +25,14 @@ const showDuration = (from, to) => {
   return durationObject.format(format);
 };
 
+const isESCbutton = (evt) => evt.code === 'Escape';
+
 export {
   humanizeEditFormDate,
   humanizeDate,
   humanizeTime,
   formatDate,
   formatTime,
-  showDuration
+  showDuration,
+  isESCbutton
 };

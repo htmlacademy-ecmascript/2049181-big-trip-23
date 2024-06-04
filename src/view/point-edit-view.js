@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import { humanizeEditFormDate } from '../util.js';
 
 const createEventTypeItemTemplate = (type, eventItemType) => {
@@ -128,26 +128,29 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
 </li>`
 );
 
-export default class EventsItemEditView {
-  eventItem = {};
+export default class PointEditView extends AbstractView {
+  #eventItem = {};
+  #saveButton = null;
+  #rollupButton = null;
+  #onSaveButtonClick = null;
 
-  constructor(eventItem) {
-    this.eventItem = eventItem;
+  constructor({point, onSaveButtonClick}) {
+    super();
+    this.#eventItem = point;
+    this.#onSaveButtonClick = onSaveButtonClick;
+    this.#saveButton = this.element.querySelector('.event__save-btn');
+    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+
+    this.#saveButton.addEventListener('click', this.buttonClickHandler);
+    this.#rollupButton.addEventListener('click', this.buttonClickHandler);
   }
 
-  getTemplate() {
-    return createEventsItemEditTemplate(this.eventItem);
+  get template() {
+    return createEventsItemEditTemplate(this.#eventItem);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
+  buttonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSaveButtonClick();
+  };
 }

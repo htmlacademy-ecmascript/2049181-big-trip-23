@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import { createElement } from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
 const createEventTypeItemTemplate = (type) => {
   const lowerCaseType = type.toLowerCase();
@@ -133,20 +133,9 @@ const createEventsItemAddTemplate = () => (
 </li>`
 );
 
-export default class EventsItemAddView {
-  getTemplate() {
+export default class PointAddView extends AbstractView {
+  get template() {
     return createEventsItemAddTemplate();
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
-  }
 }
