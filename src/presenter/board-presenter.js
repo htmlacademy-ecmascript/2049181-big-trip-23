@@ -1,4 +1,4 @@
-import { render } from '../framework/render.js';
+import { render, replace } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
 import PointEditView from '../view/point-edit-view.js';
 import PointItemView from '../view/point-view.js';
@@ -39,8 +39,27 @@ export default class BoardPresenter {
 
   #renderPoint(point) {
     point = this.#createAdvancedPoint(point);
-    const eventItemView = new PointItemView(point);
-    const eventItemEditView = new PointEditView(point);
+    const eventItemView = new PointItemView({
+      point,
+      onRollupButtonClick: () => {
+        replacePointToForm();
+      }
+    });
+
+    const eventItemEditView = new PointEditView({
+      point,
+      onSaveButtonClick: () => {
+        replaceFormToPoint();
+      }
+    });
+
+    function replacePointToForm() {
+      replace(eventItemEditView, eventItemView);
+    }
+
+    function replaceFormToPoint() {
+      replace(eventItemView, eventItemEditView);
+    }
 
     render(eventItemView, this.#eventsList.element);
   }

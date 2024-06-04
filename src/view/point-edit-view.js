@@ -130,14 +130,24 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
 
 export default class PointEditView extends AbstractView {
   #eventItem = {};
+  #saveButton = null;
+  #onSaveButtonClick = null;
 
-  constructor(eventItem) {
+  constructor({point, onSaveButtonClick}) {
     super();
-    this.#eventItem = eventItem;
+    this.#eventItem = point;
+    this.#onSaveButtonClick = onSaveButtonClick;
+    this.#saveButton = this.element.querySelector('.event__save-btn');
+
+    this.#saveButton.addEventListener('click', this.saveButtotClickHandler);
   }
 
   get template() {
     return createEventsItemEditTemplate(this.#eventItem);
   }
 
+  saveButtotClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSaveButtonClick();
+  };
 }

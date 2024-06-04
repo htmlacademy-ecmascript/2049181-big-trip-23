@@ -49,13 +49,26 @@ const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, ba
 
 export default class PointItemView extends AbstractView {
   #eventItem = {};
+  #rollupButton = null;
+  #onRollupButtonClick = null;
 
-  constructor (eventItem) {
+  constructor ({point, onRollupButtonClick}) {
     super();
-    this.#eventItem = eventItem;
+    this.#eventItem = point;
+    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+    this.#onRollupButtonClick = onRollupButtonClick;
+
+    this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
+
   }
 
   get template() {
     return createEventsItemTemplate(this.#eventItem);
   }
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+
+    this.#onRollupButtonClick();
+  };
 }
