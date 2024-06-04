@@ -1,12 +1,12 @@
 import { render } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import EventsItemEditView from '../view/events-item-edit-view.js';
-import EventsItemView from '../view/events-item-view.js';
-import EventsListView from '../view/events-list-view.js';
+import PointEditView from '../view/point-edit-view.js';
+import PointItemView from '../view/point-view.js';
+import PointsListView from '../view/points-list-view.js';
 
 export default class BoardPresenter {
 
-  #eventsList = new EventsListView;
+  #eventsList = new PointsListView;
   #boardContainer = null;
   #dataModel = null;
   #eventItems = [];
@@ -39,8 +39,8 @@ export default class BoardPresenter {
 
   #renderPoint(point) {
     point = this.#createAdvancedPoint(point);
-    const eventItemView = new EventsItemView(point);
-    const eventItemEditView = new EventsItemEditView(point);
+    const eventItemView = new PointItemView(point);
+    const eventItemEditView = new PointEditView(point);
 
     render(eventItemView, this.#eventsList.element);
   }

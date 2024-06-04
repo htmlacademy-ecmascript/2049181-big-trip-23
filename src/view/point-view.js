@@ -47,7 +47,7 @@ const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, ba
 </li>`
 );
 
-export default class EventsItemView extends AbstractView {
+export default class PointItemView extends AbstractView {
   #eventItem = {};
 
   constructor (eventItem) {

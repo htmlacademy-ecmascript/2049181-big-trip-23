@@ -128,7 +128,7 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
 </li>`
 );
 
-export default class EventsItemEditView extends AbstractView {
+export default class PointEditView extends AbstractView {
   #eventItem = {};
 
   constructor(eventItem) {
