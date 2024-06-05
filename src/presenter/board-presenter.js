@@ -4,20 +4,23 @@ import PointEditView from '../view/point-edit-view.js';
 import PointItemView from '../view/point-view.js';
 import PointsListView from '../view/points-list-view.js';
 import { isESCbutton } from '../util.js';
+import NoPoints from '../view/no-points.js';
 
 export default class BoardPresenter {
 
   #eventsList = new PointsListView;
   #boardContainer = null;
   #dataModel = null;
+  #filterModel = null;
   #eventItems = [];
   #destinations = [];
   #offers = [];
 
 
-  constructor({boardContainer, dataModel}) {
+  constructor({boardContainer, dataModel, filterModel}) {
     this.#boardContainer = boardContainer;
     this.#dataModel = dataModel;
+    this.#filterModel = filterModel;
   }
 
   init() {
@@ -26,6 +29,11 @@ export default class BoardPresenter {
       destinations: this.#destinations,
       offers: this.#offers
     } = this.#dataModel.data);
+
+    if (this.#eventItems.length === 0) {
+      render(new NoPoints({currentFilter: this.#getCurrentFilter()}), this.#boardContainer);
+      return;
+    }
 
     this.#renderBoard();
   }
@@ -103,5 +111,9 @@ export default class BoardPresenter {
         destinationsList: this.#destinations
       }
     );
+  }
+
+  #getCurrentFilter() {
+    return this.#filterModel.filter;
   }
 }

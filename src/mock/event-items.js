@@ -17,13 +17,14 @@ const createEventItem = (destinations, offers) => {
   };
   const hours = getRandomInteger(10, 15);
   const minutes = getRandomInteger(10, 30);
+  const month = getRandomInteger(5, 7);
 
   return (
     {
       'id': getRandomIntegerNoRepeat(1000, 9999),
       'basePrice': getRandomInteger(100, 999),
-      'dateFrom': `2024-05-${getRandomInteger(10, 13)}T${hours}:${minutes}:00.881Z`,
-      'dateTo': `2024-05-${getRandomInteger(13, 15)}T${hours + getRandomInteger(0, 3)}:${minutes + getRandomInteger(1, 29)}:00.881Z`,
+      'dateFrom': `2024-0${month}-${getRandomInteger(10, 13)}T${hours}:${minutes}:00.881Z`,
+      'dateTo': `2024-0${month + getRandomInteger(0, 1)}-${getRandomInteger(13, 15)}T${hours + getRandomInteger(0, 3)}:${minutes + getRandomInteger(1, 29)}:00.881Z`,
       'destination': getRandomArrayElement(destinations).id,
       'isFavorite': Boolean(getRandomInteger(0, 1)),
       'offers': createSelectedOffers(),

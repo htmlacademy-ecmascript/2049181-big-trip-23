@@ -59,7 +59,6 @@ export default class PointItemView extends AbstractView {
     this.#onRollupButtonClick = onRollupButtonClick;
 
     this.#rollupButton.addEventListener('click', this.#rollupButtonClickHandler);
-
   }
 
   get template() {
