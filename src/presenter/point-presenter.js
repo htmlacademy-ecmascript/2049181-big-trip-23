@@ -1,4 +1,4 @@
-import { render, replace } from '../framework/render.js';
+import { remove, render, replace } from '../framework/render.js';
 import { isESCbutton } from '../util.js';
 import PointEditView from '../view/point-edit-view.js';
 import PointItemView from '../view/point-view.js';
@@ -6,50 +6,84 @@ import PointItemView from '../view/point-view.js';
 export default class PointPresenter {
   #point = null;
   #container = null;
-  constructor({point, container}) {
-    this.#point = point;
+  #handleDataChange = null;
+  #pointItemView = null;
+  #pointEditView = null;
+
+  constructor({container, onDataChange}) {
     this.#container = container;
+    this.#handleDataChange = onDataChange;
   }
 
-  init() {
-    const point = this.#point;
+  init(point) {
+    this.#point = point;
+
+    const previousPointItemView = this.#pointItemView;
+    const previousPointEditView = this.#pointEditView;
 
     const escKeydownHandler = (evt) => {
       if (isESCbutton(evt)) {
         evt.preventDefault();
-        replaceFormToPoint();
+        this.#replaceFormToPoint();
 
         document.removeEventListener('keydown', escKeydownHandler);
       }
     };
 
-    const eventItemView = new PointItemView({
-      point,
+    this.#pointItemView = new PointItemView({
+      point: this.#point,
       onRollupButtonClick: () => {
-        replacePointToForm();
+        this.#replacePointToForm();
 
         document.addEventListener('keydown', escKeydownHandler);
-      }
+      },
+      onFavoriteButtonClick: this.#handleFavoriteButtonClick
     });
 
-    const eventItemEditView = new PointEditView({
-      point,
+
+    this.#pointEditView = new PointEditView({
+      point: this.#point,
       onSaveButtonClick: () => {
-        replaceFormToPoint();
+        this.#replaceFormToPoint();
 
         document.removeEventListener('keydown', escKeydownHandler);
       }
     });
 
-    function replacePointToForm() {
-      replace(eventItemEditView, eventItemView);
+    if (previousPointItemView === null || previousPointEditView === null) {
+      render(this.#pointItemView, this.#container);
+      return;
     }
 
-    function replaceFormToPoint() {
-      replace(eventItemView, eventItemEditView);
+    if (this.#container.contains(previousPointItemView.element)) {
+      replace(this.#pointItemView, previousPointItemView);
     }
 
-    render(eventItemView, this.#container);
+    if (this.#container.contains(previousPointItemView.element)) {
+      replace(this.#pointEditView, previousPointEditView);
+    }
+
+    remove(previousPointItemView);
+    remove(previousPointEditView);
   }
+
+  #replacePointToForm() {
+    replace(this.#pointEditView, this.#pointItemView);
+  }
+
+  #replaceFormToPoint() {
+    replace(this.#pointItemView, this.#pointEditView);
+  }
+
+  destroy() {
+    remove(this.#pointItemView);
+    remove(this.#pointEditView);
+  }
+
+  #handleFavoriteButtonClick = () => {
+    this.#handleDataChange({ ...this.#point,
+      isFavorite: !this.#point.isFavorite
+    });
+  };
 
 }

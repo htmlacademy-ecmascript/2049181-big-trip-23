@@ -13,6 +13,7 @@ export default class BoardPresenter {
   #eventItems = [];
   #destinations = [];
   #offers = [];
+  #pointPresenters = new Map();
 
 
   constructor({boardContainer, dataModel, filterModel}) {
@@ -45,13 +46,21 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    const pointPresenter = new PointPresenter({point, container: this.#eventsList.element});
-    pointPresenter.init();
+    const pointPresenter = new PointPresenter({
+      container: this.#eventsList.element,
+      onDataChange: this.#handlePointChange
+    });
+
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints() {
     this.#eventItems.forEach((point) => {
-      point = this.#createAdvancedPoint(point);
+      if (!point.destinationsList) {
+        point = this.#createAdvancedPoint(point);
+      }
+
       this.#renderPoint(point);
     });
   }
@@ -81,4 +90,19 @@ export default class BoardPresenter {
   #getCurrentFilter() {
     return this.#filterModel.filter;
   }
+
+  #updatePoint(update, points) {
+    return points.map((point) => point.id === update.id ? update : point);
+  }
+
+  #clearAllPoints() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+  }
+
+  #handlePointChange = (update) => {
+    this.#eventItems = this.#updatePoint(
+      update, this.#eventItems);
+    this.#pointPresenters.get(update.id).init(update);
+  };
+
 }
