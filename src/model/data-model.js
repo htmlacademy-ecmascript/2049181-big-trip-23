@@ -1,10 +1,12 @@
 import { generateData } from '../mock/generate-data.js';
 
 export default class DataModel {
-  #data = {};
+  #data = null;
 
   get data() {
-    this.#data = generateData();
+    if (!this.#data) {
+      this.#data = generateData();
+    }
 
     return this.#data;
   }
