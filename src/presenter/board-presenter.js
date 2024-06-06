@@ -1,10 +1,8 @@
-import { render, replace } from '../framework/render.js';
+import { render } from '../framework/render.js';
 import SortView from '../view/sort-view.js';
-import PointEditView from '../view/point-edit-view.js';
-import PointItemView from '../view/point-view.js';
 import PointsListView from '../view/points-list-view.js';
-import { isESCbutton } from '../util.js';
 import NoPoints from '../view/no-points.js';
+import PointPresenter from './point-presenter.js';
 
 export default class BoardPresenter {
 
@@ -47,48 +45,15 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    point = this.#createAdvancedPoint(point);
-
-    const escKeydownHandler = (evt) => {
-      if (isESCbutton(evt)) {
-        evt.preventDefault();
-        replaceFormToPoint();
-
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    };
-
-    const eventItemView = new PointItemView({
-      point,
-      onRollupButtonClick: () => {
-        replacePointToForm();
-
-        document.addEventListener('keydown', escKeydownHandler);
-      }
-    });
-
-    const eventItemEditView = new PointEditView({
-      point,
-      onSaveButtonClick: () => {
-        replaceFormToPoint();
-
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    });
-
-    function replacePointToForm() {
-      replace(eventItemEditView, eventItemView);
-    }
-
-    function replaceFormToPoint() {
-      replace(eventItemView, eventItemEditView);
-    }
-
-    render(eventItemView, this.#eventsList.element);
+    const pointPresenter = new PointPresenter({point, container: this.#eventsList.element});
+    pointPresenter.init();
   }
 
   #renderPoints() {
-    this.#eventItems.forEach((point) => this.#renderPoint(point));
+    this.#eventItems.forEach((point) => {
+      point = this.#createAdvancedPoint(point);
+      this.#renderPoint(point);
+    });
   }
 
   #renderBoard() {

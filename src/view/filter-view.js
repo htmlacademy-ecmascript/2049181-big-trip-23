@@ -1,3 +1,4 @@
+//TODO реализовать блокировку фильтра, если по нему нет данных.
 import { FilterType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
