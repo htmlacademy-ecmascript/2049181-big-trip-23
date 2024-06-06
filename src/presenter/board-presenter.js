@@ -48,7 +48,8 @@ export default class BoardPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       container: this.#eventsList.element,
-      onDataChange: this.#handlePointChange
+      onDataChange: this.#handlePointChange,
+      onFormOpen: this.#handleFormOpen,
     });
 
     pointPresenter.init(point);
@@ -105,4 +106,7 @@ export default class BoardPresenter {
     this.#pointPresenters.get(update.id).init(update);
   };
 
+  #handleFormOpen = () => {
+    this.#pointPresenters.forEach((presenter) => presenter.reset());
+  };
 }

@@ -3,16 +3,24 @@ import { isESCbutton } from '../util.js';
 import PointEditView from '../view/point-edit-view.js';
 import PointItemView from '../view/point-view.js';
 
+const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing'
+};
+
 export default class PointPresenter {
   #point = null;
   #container = null;
   #handleDataChange = null;
+  #handleFormOpen = null;
   #pointItemView = null;
   #pointEditView = null;
+  #mode = Mode.DEFAULT;
 
-  constructor({container, onDataChange}) {
+  constructor({container, onDataChange, onFormOpen}) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
+    this.#handleFormOpen = onFormOpen;
   }
 
   init(point) {
@@ -33,8 +41,8 @@ export default class PointPresenter {
     this.#pointItemView = new PointItemView({
       point: this.#point,
       onRollupButtonClick: () => {
+        this.#handleFormOpen();
         this.#replacePointToForm();
-
         document.addEventListener('keydown', escKeydownHandler);
       },
       onFavoriteButtonClick: this.#handleFavoriteButtonClick
@@ -69,15 +77,12 @@ export default class PointPresenter {
 
   #replacePointToForm() {
     replace(this.#pointEditView, this.#pointItemView);
+    this.#mode = Mode.EDITING;
   }
 
   #replaceFormToPoint() {
     replace(this.#pointItemView, this.#pointEditView);
-  }
-
-  destroy() {
-    remove(this.#pointItemView);
-    remove(this.#pointEditView);
+    this.#mode = Mode.DEFAULT;
   }
 
   #handleFavoriteButtonClick = () => {
@@ -85,5 +90,16 @@ export default class PointPresenter {
       isFavorite: !this.#point.isFavorite
     });
   };
+
+  destroy() {
+    remove(this.#pointItemView);
+    remove(this.#pointEditView);
+  }
+
+  reset() {
+    if (this.#mode === Mode.EDITING) {
+      this.#replaceFormToPoint();
+    }
+  }
 
 }
