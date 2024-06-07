@@ -25,7 +25,7 @@ const createEventsItemTemplate = ({isFavorite, destinationName, offers, type, ba
         —
         <time class="event__end-time" datetime="${formatTime(dateTo)}">${humanizeTime(dateTo)}</time>
       </p>
-      <p class="event__duration">${showDuration(dateFrom, dateTo)}</p>
+      <p class="event__duration">${showDuration({dateFrom, dateTo})}</p>
     </div>
     <p class="event__price">
       €&nbsp;<span class="event__price-value">${basePrice}</span>
