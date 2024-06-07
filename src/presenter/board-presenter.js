@@ -3,6 +3,8 @@ import SortView from '../view/sort-view.js';
 import PointsListView from '../view/points-list-view.js';
 import NoPoints from '../view/no-points.js';
 import PointPresenter from './point-presenter.js';
+import { SortType } from '../const.js';
+import { sortByDate, sortByDuration, sortByPrice } from '../util.js';
 
 export default class BoardPresenter {
 
@@ -11,6 +13,7 @@ export default class BoardPresenter {
   #dataModel = null;
   #filterModel = null;
   #eventItems = [];
+  #unsortedEventItems = [];
   #destinations = [];
   #offers = [];
   #pointPresenters = new Map();
@@ -28,6 +31,9 @@ export default class BoardPresenter {
       destinations: this.#destinations,
       offers: this.#offers
     } = this.#dataModel.data);
+    this.#sortData();
+
+    ({eventItems: this.#unsortedEventItems} = this.#dataModel.data);
 
     if (this.#eventItems.length === 0) {
       render(new NoPoints({currentFilter: this.#getCurrentFilter()}), this.#boardContainer);
@@ -38,7 +44,7 @@ export default class BoardPresenter {
   }
 
   #renderSort() {
-    render(new SortView, this.#boardContainer);
+    render(new SortView({onSortChange: this.#handleSortChange}), this.#boardContainer);
   }
 
   #renderPointsList() {
@@ -101,12 +107,36 @@ export default class BoardPresenter {
   }
 
   #handlePointChange = (update) => {
-    this.#eventItems = this.#updatePoint(
-      update, this.#eventItems);
+    this.#eventItems = this.#updatePoint(update, this.#eventItems);
+    this.#unsortedEventItems = this.#updatePoint(update, this.#unsortedEventItems);
     this.#pointPresenters.get(update.id).init(update);
   };
 
   #handleFormOpen = () => {
     this.#pointPresenters.forEach((presenter) => presenter.reset());
+  };
+
+  #handleSortChange = (sortType) => {
+    this.#sortData(sortType);
+    this.#clearAllPoints();
+    this.#renderPoints();
+  };
+
+  #sortData = (sortType) => {
+    const data = this.#eventItems.slice();
+
+    switch (sortType) {
+      case SortType.PRICE:
+        this.#eventItems = data.sort(sortByPrice);
+        break;
+
+      case SortType.TIME:
+        this.#eventItems = data.sort(sortByDuration);
+        break;
+
+      default:
+        this.#eventItems = data.sort(sortByDate);
+
+    }
   };
 }

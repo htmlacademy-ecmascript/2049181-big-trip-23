@@ -1,3 +1,4 @@
+import { SortType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createSortTemplate = () => (
@@ -30,8 +31,30 @@ const createSortTemplate = () => (
 );
 
 export default class SortView extends AbstractView {
+  #onSortChange = null;
+  #currentSortType = SortType.DAY;
+
+  constructor({onSortChange}) {
+    super();
+    this.#onSortChange = onSortChange;
+    this.element.addEventListener('click', this.#sortChangeHandler);
+  }
+
   get template() {
     return createSortTemplate();
   }
+
+  #sortChangeHandler = (evt) => {
+    if (evt.target.tagName !== 'INPUT') {
+      return;
+    }
+
+    const newSortType = evt.target.value.slice(5);
+    if (newSortType !== this.#currentSortType) {
+      this.#onSortChange(newSortType);
+      this.#currentSortType = newSortType;
+    }
+
+  };
 
 }
