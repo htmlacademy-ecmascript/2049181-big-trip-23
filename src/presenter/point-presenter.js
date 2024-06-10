@@ -55,6 +55,7 @@ export default class PointPresenter {
       onSaveButtonClick: () => {
         this.#replaceFormToPoint();
       },
+      onRollupButtonClick: this.#rollupButtonHandler,
       offers: this.#offers,
       destinations: this.#destinations,
       getOffersByType: this.#getOffersByType,
@@ -100,8 +101,14 @@ export default class PointPresenter {
   #escKeydownHandler = (evt) => {
     if (isESCbutton(evt)) {
       evt.preventDefault();
+      this.#pointEditView.reset(this.#point);
       this.#replaceFormToPoint();
     }
+  };
+
+  #rollupButtonHandler = () => {
+    this.#pointEditView.reset(this.#point);
+    this.#replaceFormToPoint();
   };
 
   #getDestinationName(id, destinations) {
@@ -121,6 +128,7 @@ export default class PointPresenter {
 
   reset() {
     if (this.#mode === Mode.EDITING) {
+      this.#pointEditView.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }

@@ -145,8 +145,9 @@ export default class PointEditView extends AbstractStatefulView {
   #getOffersByType = null;
   #getDestinationName = null;
   #onDataChange = null;
+  #onRollupButtonClick = null;
 
-  constructor({point, onSaveButtonClick, destinations, getOffersByType, getDestinationName, onDataChange}) {
+  constructor({point, onSaveButtonClick, destinations, getOffersByType, getDestinationName, onDataChange, onRollupButtonClick}) {
     super();
     this._state = point;
     this.#onSaveButtonClick = onSaveButtonClick;
@@ -154,6 +155,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.#getOffersByType = getOffersByType;
     this.#getDestinationName = getDestinationName;
     this.#onDataChange = onDataChange;
+    this.#onRollupButtonClick = onRollupButtonClick;
 
     this._restoreHandlers();
   }
@@ -196,7 +198,7 @@ export default class PointEditView extends AbstractStatefulView {
     this.element.querySelector('.event__save-btn')
       .addEventListener('click', this.#saveButtonClickHandler);
     this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#buttonClickHandler);
+      .addEventListener('click', this.#rollupButtonClickHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
   }
@@ -205,5 +207,14 @@ export default class PointEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.#onSaveButtonClick();
     this.#onDataChange(this._state);
+  };
+
+  reset = (point) => {
+    this.updateElement(point);
+  };
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onRollupButtonClick();
   };
 }
