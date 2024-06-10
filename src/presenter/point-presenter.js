@@ -58,7 +58,8 @@ export default class PointPresenter {
       offers: this.#offers,
       destinations: this.#destinations,
       getOffersByType: this.#getOffersByType,
-      getDestinationName: this.#getDestinationName
+      getDestinationName: this.#getDestinationName,
+      onDataChange: this.#handleDataChange
     });
 
     if (previousPointItemView === null || previousPointEditView === null) {
