@@ -56,6 +56,7 @@ export default class BoardPresenter {
       container: this.#eventsList.element,
       onDataChange: this.#handlePointChange,
       onFormOpen: this.#handleFormOpen,
+      allOffers: this.#offers
     });
 
     pointPresenter.init(point);

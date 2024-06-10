@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEditFormDate } from '../util.js';
 
 const createEventTypeItemTemplate = (type, eventItemType) => {
@@ -71,7 +71,17 @@ const createDestinationInfoTemplate = (destinationsList, thisDestinationId) => {
   ) : '';
 };
 
-const createEventsItemEditTemplate = ({type, destinationName, destinationsList, dateFrom, dateTo, basePrice, destination, allOffers, offers}) => (
+const createEventsItemEditTemplate = ({
+  type,
+  destinationName,
+  destinationsList,
+  dateFrom,
+  dateTo,
+  basePrice,
+  destination,
+  allOffers,
+  offers
+}) => (
   `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -128,29 +138,46 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
 </li>`
 );
 
-export default class PointEditView extends AbstractView {
-  #eventItem = {};
-  #saveButton = null;
-  #rollupButton = null;
+export default class PointEditView extends AbstractStatefulView {
   #onSaveButtonClick = null;
+  #offers = null;
 
-  constructor({point, onSaveButtonClick}) {
+  constructor({point, onSaveButtonClick, offers}) {
     super();
-    this.#eventItem = point;
+    this._state = point;
     this.#onSaveButtonClick = onSaveButtonClick;
-    this.#saveButton = this.element.querySelector('.event__save-btn');
-    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+    this.#offers = offers;
 
-    this.#saveButton.addEventListener('click', this.buttonClickHandler);
-    this.#rollupButton.addEventListener('click', this.buttonClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEventsItemEditTemplate(this.#eventItem);
+    return createEventsItemEditTemplate(this._state);
   }
 
-  buttonClickHandler = (evt) => {
+  #getOffersByType(type) {
+    return this.#offers.find((element) => element.type === type).offers;
+  }
+
+  #buttonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onSaveButtonClick();
   };
+
+  #eventTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      allOffers: this.#getOffersByType(evt.target.value),
+      type: evt.target.value
+    });
+  };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#eventTypeChangeHandler);
+    this.element.querySelector('.event__save-btn')
+      .addEventListener('click', this.#buttonClickHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#buttonClickHandler);
+  }
 }
