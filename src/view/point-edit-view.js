@@ -74,12 +74,12 @@ const createDestinationInfoTemplate = (destinationsList, thisDestinationId) => {
 const createEventsItemEditTemplate = ({
   type,
   destinationName,
-  destinationsList,
+  destinations,
   dateFrom,
   dateTo,
   basePrice,
   destination,
-  allOffers,
+  allOffersByType,
   offers
 }) => (
   `<li class="trip-events__item">
@@ -105,7 +105,7 @@ const createEventsItemEditTemplate = ({
           ${type}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
-        ${createDestinationList(destinationsList)}
+        ${createDestinationList(destinations)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
@@ -131,8 +131,8 @@ const createEventsItemEditTemplate = ({
       </button>
     </header>
     <section class="event__details">
-      ${createOffersListTemplate(allOffers, offers)}
-      ${createDestinationInfoTemplate(destinationsList, destination)}
+      ${createOffersListTemplate(allOffersByType, offers)}
+      ${createDestinationInfoTemplate(destinations, destination)}
     </section>
   </form>
 </li>`
@@ -141,22 +141,29 @@ const createEventsItemEditTemplate = ({
 export default class PointEditView extends AbstractStatefulView {
   #onSaveButtonClick = null;
   #offers = null;
+  #destinations = null;
+  #getOffersByType = null;
+  #getDestinationName = null;
 
-  constructor({point, onSaveButtonClick, offers}) {
+  constructor({point, onSaveButtonClick, destinations, getOffersByType, getDestinationName}) {
     super();
     this._state = point;
     this.#onSaveButtonClick = onSaveButtonClick;
-    this.#offers = offers;
+    this.#destinations = destinations;
+    this.#getOffersByType = getOffersByType;
+    this.#getDestinationName = getDestinationName;
 
     this._restoreHandlers();
   }
 
   get template() {
-    return createEventsItemEditTemplate(this._state);
-  }
-
-  #getOffersByType(type) {
-    return this.#offers.find((element) => element.type === type).offers;
+    return createEventsItemEditTemplate({
+      ...this._state,
+      destinations: this.#destinations,
+      allOffers: this.#offers,
+      allOffersByType: this.#getOffersByType(this._state.type),
+      destinationName: this.#getDestinationName(this._state.destination, this.#destinations)
+    });
   }
 
   #buttonClickHandler = (evt) => {
@@ -172,6 +179,15 @@ export default class PointEditView extends AbstractStatefulView {
     });
   };
 
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    if (this.#destinations.find((item) => item.name === evt.target.value)) {
+      this.updateElement({
+        destination: this.#destinations.find((item) => item.name === evt.target.value).id
+      });
+    }
+  };
+
   _restoreHandlers() {
     this.element.querySelector('.event__type-group')
       .addEventListener('change', this.#eventTypeChangeHandler);
@@ -179,5 +195,7 @@ export default class PointEditView extends AbstractStatefulView {
       .addEventListener('click', this.#buttonClickHandler);
     this.element.querySelector('.event__rollup-btn')
       .addEventListener('click', this.#buttonClickHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
   }
 }

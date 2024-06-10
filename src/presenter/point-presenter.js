@@ -15,14 +15,16 @@ export default class PointPresenter {
   #handleFormOpen = null;
   #pointItemView = null;
   #pointEditView = null;
-  #allOffers = null;
+  #offers = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
-  constructor({container, onDataChange, onFormOpen, allOffers}) {
+  constructor({container, onDataChange, onFormOpen, allOffers, destinations}) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
     this.#handleFormOpen = onFormOpen;
-    this.#allOffers = allOffers;
+    this.#offers = allOffers;
+    this.#destinations = destinations;
   }
 
   init(point) {
@@ -32,7 +34,11 @@ export default class PointPresenter {
     const previousPointEditView = this.#pointEditView;
 
     this.#pointItemView = new PointItemView({
-      point: this.#point,
+      point: {
+        ...this.#point,
+        destinationName: this.#getDestinationName(this.#point.destination, this.#destinations),
+        offers: this.#getOffersById(this.#point.offers, this.#point.type)
+      },
       onRollupButtonClick: () => {
         this.#handleFormOpen();
         this.#replacePointToForm();
@@ -42,11 +48,17 @@ export default class PointPresenter {
 
 
     this.#pointEditView = new PointEditView({
-      point: this.#point,
+      point: {
+        ...this.#point,
+        offers: this.#getOffersById(this.#point.offers, this.#point.type)
+      },
       onSaveButtonClick: () => {
         this.#replaceFormToPoint();
       },
-      offers: this.#allOffers
+      offers: this.#offers,
+      destinations: this.#destinations,
+      getOffersByType: this.#getOffersByType,
+      getDestinationName: this.#getDestinationName
     });
 
     if (previousPointItemView === null || previousPointEditView === null) {
@@ -88,10 +100,18 @@ export default class PointPresenter {
     if (isESCbutton(evt)) {
       evt.preventDefault();
       this.#replaceFormToPoint();
-
-
     }
   };
+
+  #getDestinationName(id, destinations) {
+    return destinations.find((element) => element.id === id).name;
+  }
+
+  #getOffersByType = (type) => this.#offers.find((element) => element.type === type).offers;
+
+  #getOffersById(selectedOffers, type) {
+    return this.#getOffersByType(type).filter((offer) => selectedOffers.includes(offer.id));
+  }
 
   destroy() {
     remove(this.#pointItemView);
