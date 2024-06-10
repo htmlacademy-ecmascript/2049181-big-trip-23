@@ -1,5 +1,5 @@
 import { EVENT_TYPES } from '../const.js';
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEditFormDate } from '../util.js';
 
 const createEventTypeItemTemplate = (type, eventItemType) => {
@@ -71,7 +71,17 @@ const createDestinationInfoTemplate = (destinationsList, thisDestinationId) => {
   ) : '';
 };
 
-const createEventsItemEditTemplate = ({type, destinationName, destinationsList, dateFrom, dateTo, basePrice, destination, allOffers, offers}) => (
+const createEventsItemEditTemplate = ({
+  type,
+  destinationName,
+  destinations,
+  dateFrom,
+  dateTo,
+  basePrice,
+  destination,
+  allOffersByType,
+  offers
+}) => (
   `<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
     <header class="event__header">
@@ -95,7 +105,7 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
           ${type}
         </label>
         <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationName}" list="destination-list-1">
-        ${createDestinationList(destinationsList)}
+        ${createDestinationList(destinations)}
       </div>
 
       <div class="event__field-group  event__field-group--time">
@@ -121,36 +131,90 @@ const createEventsItemEditTemplate = ({type, destinationName, destinationsList, 
       </button>
     </header>
     <section class="event__details">
-      ${createOffersListTemplate(allOffers, offers)}
-      ${createDestinationInfoTemplate(destinationsList, destination)}
+      ${createOffersListTemplate(allOffersByType, offers)}
+      ${createDestinationInfoTemplate(destinations, destination)}
     </section>
   </form>
 </li>`
 );
 
-export default class PointEditView extends AbstractView {
-  #eventItem = {};
-  #saveButton = null;
-  #rollupButton = null;
+export default class PointEditView extends AbstractStatefulView {
   #onSaveButtonClick = null;
+  #offers = null;
+  #destinations = null;
+  #getOffersByType = null;
+  #getDestinationName = null;
+  #onDataChange = null;
+  #onRollupButtonClick = null;
 
-  constructor({point, onSaveButtonClick}) {
+  constructor({point, onSaveButtonClick, destinations, getOffersByType, getDestinationName, onDataChange, onRollupButtonClick}) {
     super();
-    this.#eventItem = point;
+    this._state = point;
     this.#onSaveButtonClick = onSaveButtonClick;
-    this.#saveButton = this.element.querySelector('.event__save-btn');
-    this.#rollupButton = this.element.querySelector('.event__rollup-btn');
+    this.#destinations = destinations;
+    this.#getOffersByType = getOffersByType;
+    this.#getDestinationName = getDestinationName;
+    this.#onDataChange = onDataChange;
+    this.#onRollupButtonClick = onRollupButtonClick;
 
-    this.#saveButton.addEventListener('click', this.buttonClickHandler);
-    this.#rollupButton.addEventListener('click', this.buttonClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    return createEventsItemEditTemplate(this.#eventItem);
+    return createEventsItemEditTemplate({
+      ...this._state,
+      destinations: this.#destinations,
+      allOffers: this.#offers,
+      allOffersByType: this.#getOffersByType(this._state.type),
+      destinationName: this.#getDestinationName(this._state.destination, this.#destinations)
+    });
   }
 
-  buttonClickHandler = (evt) => {
+  #buttonClickHandler = (evt) => {
     evt.preventDefault();
     this.#onSaveButtonClick();
+  };
+
+  #eventTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      allOffers: this.#getOffersByType(evt.target.value),
+      type: evt.target.value
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    evt.preventDefault();
+    if (this.#destinations.find((item) => item.name === evt.target.value)) {
+      this.updateElement({
+        destination: this.#destinations.find((item) => item.name === evt.target.value).id
+      });
+    }
+  };
+
+  _restoreHandlers() {
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#eventTypeChangeHandler);
+    this.element.querySelector('.event__save-btn')
+      .addEventListener('click', this.#saveButtonClickHandler);
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#rollupButtonClickHandler);
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+  }
+
+  #saveButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onSaveButtonClick();
+    this.#onDataChange(this._state);
+  };
+
+  reset = (point) => {
+    this.updateElement(point);
+  };
+
+  #rollupButtonClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#onRollupButtonClick();
   };
 }

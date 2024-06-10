@@ -56,6 +56,8 @@ export default class BoardPresenter {
       container: this.#eventsList.element,
       onDataChange: this.#handlePointChange,
       onFormOpen: this.#handleFormOpen,
+      allOffers: this.#offers,
+      destinations: this.#destinations
     });
 
     pointPresenter.init(point);
@@ -63,11 +65,8 @@ export default class BoardPresenter {
   }
 
   #renderPoints() {
-    this.#eventItems.forEach((point) => {
-      if (!point.destinationsList) {
-        point = this.#createAdvancedPoint(point);
-      }
 
+    this.#eventItems.forEach((point) => {
       this.#renderPoint(point);
     });
   }
@@ -76,22 +75,6 @@ export default class BoardPresenter {
     this.#renderSort();
     this.#renderPointsList();
     this.#renderPoints();
-  }
-
-  #createAdvancedPoint(point) {
-    const getDestinationName = (id) => this.#destinations.find((element) => element.id === id).name;
-    const getOffersByType = (type) => this.#offers.find((element) => element.type === type).offers;
-    const getOffersById = (selectedOffers, type) => getOffersByType(type).filter((offer) => selectedOffers.includes(offer.id));
-
-    return (
-      {
-        ...point,
-        destinationName: getDestinationName(point.destination),
-        offers: getOffersById(point.offers, point.type),
-        allOffers: getOffersByType(point.type),
-        destinationsList: this.#destinations
-      }
-    );
   }
 
   #getCurrentFilter() {

@@ -15,12 +15,16 @@ export default class PointPresenter {
   #handleFormOpen = null;
   #pointItemView = null;
   #pointEditView = null;
+  #offers = null;
+  #destinations = null;
   #mode = Mode.DEFAULT;
 
-  constructor({container, onDataChange, onFormOpen}) {
+  constructor({container, onDataChange, onFormOpen, allOffers, destinations}) {
     this.#container = container;
     this.#handleDataChange = onDataChange;
     this.#handleFormOpen = onFormOpen;
+    this.#offers = allOffers;
+    this.#destinations = destinations;
   }
 
   init(point) {
@@ -29,33 +33,34 @@ export default class PointPresenter {
     const previousPointItemView = this.#pointItemView;
     const previousPointEditView = this.#pointEditView;
 
-    const escKeydownHandler = (evt) => {
-      if (isESCbutton(evt)) {
-        evt.preventDefault();
-        this.#replaceFormToPoint();
-
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
-    };
-
     this.#pointItemView = new PointItemView({
-      point: this.#point,
+      point: {
+        ...this.#point,
+        destinationName: this.#getDestinationName(this.#point.destination, this.#destinations),
+        offers: this.#getOffersById(this.#point.offers, this.#point.type)
+      },
       onRollupButtonClick: () => {
         this.#handleFormOpen();
         this.#replacePointToForm();
-        document.addEventListener('keydown', escKeydownHandler);
       },
       onFavoriteButtonClick: this.#handleFavoriteButtonClick
     });
 
 
     this.#pointEditView = new PointEditView({
-      point: this.#point,
+      point: {
+        ...this.#point,
+        offers: this.#getOffersById(this.#point.offers, this.#point.type)
+      },
       onSaveButtonClick: () => {
         this.#replaceFormToPoint();
-
-        document.removeEventListener('keydown', escKeydownHandler);
-      }
+      },
+      onRollupButtonClick: this.#rollupButtonHandler,
+      offers: this.#offers,
+      destinations: this.#destinations,
+      getOffersByType: this.#getOffersByType,
+      getDestinationName: this.#getDestinationName,
+      onDataChange: this.#handleDataChange
     });
 
     if (previousPointItemView === null || previousPointEditView === null) {
@@ -78,11 +83,13 @@ export default class PointPresenter {
   #replacePointToForm() {
     replace(this.#pointEditView, this.#pointItemView);
     this.#mode = Mode.EDITING;
+    document.addEventListener('keydown', this.#escKeydownHandler);
   }
 
   #replaceFormToPoint() {
     replace(this.#pointItemView, this.#pointEditView);
     this.#mode = Mode.DEFAULT;
+    document.removeEventListener('keydown', this.#escKeydownHandler);
   }
 
   #handleFavoriteButtonClick = () => {
@@ -91,6 +98,29 @@ export default class PointPresenter {
     });
   };
 
+  #escKeydownHandler = (evt) => {
+    if (isESCbutton(evt)) {
+      evt.preventDefault();
+      this.#pointEditView.reset(this.#point);
+      this.#replaceFormToPoint();
+    }
+  };
+
+  #rollupButtonHandler = () => {
+    this.#pointEditView.reset(this.#point);
+    this.#replaceFormToPoint();
+  };
+
+  #getDestinationName(id, destinations) {
+    return destinations.find((element) => element.id === id).name;
+  }
+
+  #getOffersByType = (type) => this.#offers.find((element) => element.type === type).offers;
+
+  #getOffersById(selectedOffers, type) {
+    return this.#getOffersByType(type).filter((offer) => selectedOffers.includes(offer.id));
+  }
+
   destroy() {
     remove(this.#pointItemView);
     remove(this.#pointEditView);
@@ -98,6 +128,7 @@ export default class PointPresenter {
 
   reset() {
     if (this.#mode === Mode.EDITING) {
+      this.#pointEditView.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
