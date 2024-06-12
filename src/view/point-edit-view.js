@@ -1,6 +1,9 @@
 import { EVENT_TYPES } from '../const.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { humanizeEditFormDate } from '../util.js';
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
+
 
 const createEventTypeItemTemplate = (type, eventItemType) => {
   const lowerCaseType = type.toLowerCase();
@@ -146,6 +149,7 @@ export default class PointEditView extends AbstractStatefulView {
   #getDestinationName = null;
   #onDataChange = null;
   #onRollupButtonClick = null;
+  #datepicker = null;
 
   constructor({point, onSaveButtonClick, destinations, getOffersByType, getDestinationName, onDataChange, onRollupButtonClick}) {
     super();
@@ -201,6 +205,18 @@ export default class PointEditView extends AbstractStatefulView {
       .addEventListener('click', this.#rollupButtonClickHandler);
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
+
+    this.#setStartDatePicker();
+    this.#setEndDatePicker();
+  }
+
+  removeElement() {
+    super.removeElement();
+
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
+    }
   }
 
   #saveButtonClickHandler = (evt) => {
@@ -217,4 +233,47 @@ export default class PointEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.#onRollupButtonClick();
   };
+
+  #setStartDatePicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('input[name ="event-start-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        minuteIncrement: 1,
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onClose: this.#startDateChangeHandler
+      }
+    );
+  }
+
+  #setEndDatePicker() {
+    this.#datepicker = flatpickr(
+      this.element.querySelector('input[name ="event-end-time"]'),
+      {
+        dateFormat: 'd/m/y H:i',
+        enableTime: true,
+        'time_24hr': true,
+        minuteIncrement: 1,
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onClose: this.#endDateChangeHandler
+      }
+    );
+  }
+
+  #startDateChangeHandler = (date) => {
+    this.updateElement({
+      dateFrom: new Date(date).toISOString()
+    });
+  };
+
+  #endDateChangeHandler = (date) => {
+    this.updateElement({
+      dateTo: new Date(date).toISOString()
+    });
+  };
+
 }

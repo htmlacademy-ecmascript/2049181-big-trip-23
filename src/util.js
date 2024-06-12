@@ -6,10 +6,10 @@ dayjs.extend(duration).extend(utc);
 
 const isESCbutton = (evt) => evt.code === 'Escape';
 const humanizeDate = (date) => dayjs(date).format('MMM DD');
-const humanizeTime = (date) => dayjs(date).utc().format('HH:mm');
+const humanizeTime = (date) => dayjs(date).format('HH:mm');
 const formatDate = (date) => dayjs(date).format('YYYY-MM-DD');
-const formatTime = (date) => dayjs(date).utc().format('YYYY-MM-DD[T]HH:mm');
-const humanizeEditFormDate = (date) => dayjs(date).utc().format('DD[/]MM[/]YY HH[:]mm');
+const formatTime = (date) => dayjs(date).format('YYYY-MM-DD[T]HH:mm');
+const humanizeEditFormDate = (date) => dayjs(date).format('DD[/]MM[/]YY HH[:]mm');
 
 const getDuration = (point) => {
   const from = dayjs(point.dateFrom);
